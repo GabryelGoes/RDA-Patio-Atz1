@@ -5,17 +5,19 @@ import { fetchWorkshopData } from './trelloService.ts';
 import Clock from './Clock.tsx';
 import VehicleRow from './VehicleRow.tsx';
 
-const STAGE_PRIORITY: Record<Stage, number> = {
+const STAGE_PRIORITY: Record<string, number> = {
   'Garantia': 1,
   'Aguardando Avaliação': 2,
   'Em Avaliação': 3,
-  'Aguardando Aprovação': 4,
-  'Aprovado': 5,
-  'Aguardando Peças': 6,
-  'Em Serviço': 7,
-  'Fase de Teste': 8,
-  'Finalizado': 9,
-  'Orçamento Não Aprovado': 10
+  'Avaliação Técnica': 4,
+  'Aguardando Aprovação': 5,
+  'Aprovado': 6,
+  'Orçamento Aprovado': 7,
+  'Aguardando Peças': 8,
+  'Em Serviço': 9,
+  'Fase de Teste': 10,
+  'Finalizado': 11,
+  'Orçamento Não Aprovado': 12
 };
 
 const App: React.FC = () => {

@@ -13,16 +13,18 @@ const getStageColors = (stage: Stage) => {
   if (s.includes('avaliação') || s.includes('aprovação')) return 'bg-yellow-400 text-yellow-950 border-yellow-300';
   if (s.includes('aprovado') || s.includes('serviço')) return 'bg-orange-500 text-white border-orange-400';
   if (s.includes('peças')) return 'bg-blue-600 text-white border-blue-500';
-  if (s.includes('teste')) return 'bg-emerald-300 text-emerald-950 border-emerald-200';
+  if (s.includes('teste')) return 'bg-green-600 text-white border-green-500'; // Verde Folha
   if (s.includes('finalizado')) return 'bg-green-800 text-white border-green-700';
-  if (s.includes('não aprovado')) return 'bg-purple-700 text-white border-purple-600';
+  if (s.includes('não aprovado')) return 'bg-purple-700 text-white border-purple-600'; // Roxo
   
   return 'bg-zinc-800 text-white border-zinc-700';
 };
 
 const VehicleRow: React.FC<VehicleRowProps> = ({ vehicle }) => {
   const colorClass = getStageColors(vehicle.stage);
-  const displayStage = vehicle.stage.toLowerCase().includes('não aprovado') ? 'Reprovado' : vehicle.stage;
+  
+  // Renomeação solicitada
+  const displayStage = vehicle.stage.toLowerCase().includes('não aprovado') ? 'Não Aprovado' : vehicle.stage;
   
   const isAguardando = vehicle.stage.toLowerCase().startsWith('aguardando');
   const isEmServico = vehicle.stage.toLowerCase().includes('serviço');
@@ -42,7 +44,7 @@ const VehicleRow: React.FC<VehicleRowProps> = ({ vehicle }) => {
       return { 
         label: "HOJE", 
         alert: null,
-        highlight: true 
+        highlight: false // Removido destaque
       };
     }
 
@@ -111,7 +113,7 @@ const VehicleRow: React.FC<VehicleRowProps> = ({ vehicle }) => {
             </div>
           )}
 
-          <p className={`font-black uppercase leading-none truncate tracking-tighter pr-2 ${deliveryStatus.highlight ? 'text-4xl text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]' : 'text-2xl'}`}>
+          <p className="font-black uppercase leading-none truncate tracking-tighter pr-2 text-2xl">
             {deliveryStatus.label}
           </p>
         </div>
