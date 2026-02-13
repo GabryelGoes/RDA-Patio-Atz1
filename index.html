@@ -19,11 +19,14 @@
       }
       @keyframes drive {
         0%, 100% { transform: translateX(0); }
-        50% { transform: translateX(6px); }
+        50% { transform: translateX(8px); }
       }
       .animate-drive {
-        animation: drive 2s ease-in-out infinite;
+        animation: drive 1.5s ease-in-out infinite;
       }
+      /* Garante que o scroll não apareça em resoluções de TV */
+      * { scrollbar-width: none; -ms-overflow-style: none; }
+      *::-webkit-scrollbar { display: none; }
     </style>
   <script type="importmap">
 {
