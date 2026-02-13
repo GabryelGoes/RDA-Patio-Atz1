@@ -17,6 +17,13 @@
         margin: 0;
         overflow: hidden;
       }
+      @keyframes drive {
+        0%, 100% { transform: translateX(0); }
+        50% { transform: translateX(6px); }
+      }
+      .animate-drive {
+        animation: drive 2s ease-in-out infinite;
+      }
     </style>
   <script type="importmap">
 {

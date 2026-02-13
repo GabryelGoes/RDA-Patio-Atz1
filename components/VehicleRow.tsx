@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Vehicle, Stage } from './types.ts';
+import { Vehicle, Stage } from '../types.ts';
 
 interface VehicleRowProps {
   vehicle: Vehicle;
@@ -8,7 +8,7 @@ interface VehicleRowProps {
 
 const getStageColors = (stage: Stage) => {
   const s = stage.toLowerCase();
-  
+
   // PRIORIDADE MÁXIMA: Lilás para Não Aprovado
   if (s.includes('não aprovado') || s.includes('nao aprovado')) {
     return 'bg-purple-400 text-white border-purple-300';
@@ -39,38 +39,10 @@ const VehicleRow: React.FC<VehicleRowProps> = ({ vehicle }) => {
   const s = vehicle.stage.toLowerCase();
   const isNaoAprovado = s.includes('não aprovado') || s.includes('nao aprovado');
   const isFaseDeTeste = s.includes('teste');
+  const isAprovado = s.includes('aprovado');
   const displayStage = isNaoAprovado ? 'Não Aprovado' : vehicle.stage;
   
-  const isAguardando = s.startsWith('aguardando');
   const isEmServico = s.includes('serviço');
-
-  const getDeliveryStatus = () => {
-    if (!vehicle.rawDueDate) return { label: vehicle.deliveryDate, alert: null, highlight: false };
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const delivery = new Date(vehicle.rawDueDate);
-    delivery.setHours(0, 0, 0, 0);
-
-    const diffTime = delivery.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays < 0) {
-      return { label: "ATRASADO", alert: null, highlight: true };
-    }
-
-    if (diffDays === 0) {
-      return { label: "HOJE", alert: null, highlight: true };
-    }
-
-    if (diffDays === 1) {
-      return { label: vehicle.deliveryDate, alert: 'tomorrow', highlight: false };
-    }
-
-    return { label: vehicle.deliveryDate, alert: null, highlight: false };
-  };
-
-  const deliveryStatus = getDeliveryStatus();
 
   const formatMechanicName = (name: string) => {
     if (!name || name === 'Pátio' || name === 'TBD') return name;
@@ -81,7 +53,6 @@ const VehicleRow: React.FC<VehicleRowProps> = ({ vehicle }) => {
 
   return (
     <div className={`flex items-center w-full h-full rounded-[24px] border px-8 transition-all duration-700 shadow-xl overflow-hidden ${colorClass}`}>
-      {/* MODELO / PLACA */}
       <div className="w-[22%] flex flex-col justify-center py-1">
         <h2 className="text-3xl font-black tracking-tighter truncate leading-none uppercase italic pr-2">
           {vehicle.model.replace('Land Rover', '').trim()}
@@ -89,12 +60,10 @@ const VehicleRow: React.FC<VehicleRowProps> = ({ vehicle }) => {
         <span className="text-[10px] font-bold opacity-60 mt-1 uppercase tracking-[0.3em]">{vehicle.plate}</span>
       </div>
 
-      {/* CLIENTE */}
       <div className="w-[16%] flex flex-col justify-center border-l border-current/10 pl-6 py-1">
         <p className="text-xl font-bold truncate uppercase leading-tight tracking-tight pr-2">{vehicle.client}</p>
       </div>
 
-      {/* ETAPA ATUAL */}
       <div className="w-[34%] flex flex-col justify-center border-l border-current/10 pl-6 py-1">
         <div className="flex items-center gap-3">
           {isEmServico && (
@@ -103,21 +72,11 @@ const VehicleRow: React.FC<VehicleRowProps> = ({ vehicle }) => {
               <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
             </div>
           )}
-
-          {isAguardando && !isFaseDeTeste && (
-            <div className="relative w-5 h-5 flex items-center justify-center border-2 border-current rounded-full shrink-0">
-              <div className="absolute w-[1.5px] h-2 bg-current origin-bottom animate-[spin_3s_linear_infinite]" style={{ top: '15%' }}></div>
-              <div className="absolute w-[1.5px] h-1.5 bg-current origin-bottom rotate-90" style={{ top: '25%', left: '48%' }}></div>
-            </div>
-          )}
-
           <div className="flex items-center gap-2 overflow-hidden">
-            {(vehicle.stage === 'Orçamento Aprovado' || vehicle.stage === 'Aprovado') && (
-              <span className="text-green-400 font-black text-2xl drop-shadow-sm shrink-0 animate-bounce">✓</span>
-            )}
+            {isNaoAprovado && <span className="text-red-500 font-black text-2xl shrink-0 animate-pulse">✕</span>}
             
-            {isNaoAprovado && (
-              <span className="text-red-500 font-black text-2xl drop-shadow-sm shrink-0 animate-pulse">✕</span>
+            {isAprovado && !isNaoAprovado && (
+              <span className="text-green-400 font-black text-2xl shrink-0 animate-bounce">✓</span>
             )}
 
             {isFaseDeTeste && (
@@ -135,31 +94,14 @@ const VehicleRow: React.FC<VehicleRowProps> = ({ vehicle }) => {
         </div>
       </div>
 
-      {/* ENTREGA / DATAS */}
       <div className="w-[14%] flex flex-col justify-center border-l border-current/10 pl-6 py-1">
-        <div className="flex items-center gap-2">
-          {deliveryStatus.alert === 'tomorrow' && (
-            <div className="relative w-5 h-5 flex items-center justify-center shrink-0">
-               <svg viewBox="0 0 24 24" className="w-full h-full text-red-600 drop-shadow-md" fill="currentColor">
-                  <path d="M12 2L1 21h22L12 2z" stroke="black" strokeWidth="2" strokeLinejoin="round" />
-                  <text x="12" y="18" textAnchor="middle" fill="black" fontSize="12" fontWeight="bold">!</text>
-               </svg>
-            </div>
-          )}
-
-          <p className={`font-black uppercase leading-none truncate tracking-tighter pr-2 ${
-            deliveryStatus.label === "ATRASADO" 
-              ? 'text-xl animate-pulse' 
-              : deliveryStatus.highlight 
-                ? 'text-2xl animate-pulse' 
-                : 'text-2xl'
-          }`}>
-            {deliveryStatus.label}
-          </p>
-        </div>
+        <p className={`font-black uppercase leading-none truncate tracking-tighter pr-2 ${
+          vehicle.deliveryDate.includes('ATRASADO') ? 'text-xl' : 'text-2xl'
+        }`}>
+          {vehicle.deliveryDate}
+        </p>
       </div>
 
-      {/* MECÂNICO */}
       <div className="w-[14%] flex flex-col justify-center border-l border-current/10 pl-6 py-1">
         <p className="text-xl font-bold uppercase truncate leading-none tracking-tight pr-2">
           {formatMechanicName(vehicle.mechanic)}
